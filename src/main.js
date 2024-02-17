@@ -42,6 +42,8 @@ async function onFormSubmit(e) {
         message:
           'Sorry, there are no images matching your search query. Please try again!',
       });
+      hideLoader();
+      return;
     } else if (searchQuery === '') {
       iziToast.show({
         ...iziToastOptions,
