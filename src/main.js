@@ -28,31 +28,34 @@ loadMoreBtn.addEventListener('click', onLoadMoreClick);
 
 async function onFormSubmit(e) {
   e.preventDefault();
+  hideLoadMoreBtn();
   galleryList.innerHTML = '';
-  showLoader();
   searchQuery = e.target.elements.input.value.trim();
   page = 1;
 
+  if (searchQuery === '') {
+    iziToast.show({
+      ...iziToastOptions,
+      message: 'Fill out the search form!',
+    });
+    return;
+  }
+
   try {
+    showLoader();
     const data = await searchImages(searchQuery, page);
     maxPage = Math.ceil(data.totalHits / 15);
     if (data.totalHits === 0) {
+      hideLoader();
       iziToast.show({
         ...iziToastOptions,
         message:
           'Sorry, there are no images matching your search query. Please try again!',
       });
-      hideLoader();
-      return;
-    } else if (searchQuery === '') {
-      iziToast.show({
-        ...iziToastOptions,
-        message: 'Fill out the search form!',
-      });
-      hideLoader();
       return;
     } else {
       renderImages(data);
+      hideLoader();
     }
   } catch (err) {
     iziToast.error({
@@ -62,7 +65,6 @@ async function onFormSubmit(e) {
     });
   }
 
-  hideLoader();
   checkBtnVisibleStatus();
   e.target.reset();
 }
